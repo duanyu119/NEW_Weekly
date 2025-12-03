@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NEV Weekly · 瀑布流可视化</title>
+  <link rel="stylesheet" href="masonry.css" />
+  <link rel="preconnect" href="https://unpkg.com">
+  <script defer src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap">
+      <div class="brand">NEV Weekly</div>
+      <nav>
+        <a href="apple.html">首页</a>
+        <span style="margin:0 .5rem;color:#c7c7cc">•</span>
+        <a href="index.html">周报</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>瀑布流 · 四大板块</h1>
+    <p>在同一页面中，以苹果风格呈现销量、新车、VIP 与智能调光板块的图形化内容。</p>
+  </section>
+
+  <main id="app" class="container">
+    <div class="masonry" aria-label="瀑布流布局">
+      <!-- 销量榜单 -->
+      <section class="card" aria-labelledby="sales-title">
+        <div class="pad">
+          <h2 id="sales-title">销量榜单（Top 10）</h2>
+          <p>价格带：>250k / >350k RMB</p>
+          <svg class="chart" viewBox="0 0 600 180" role="img" aria-label="销量柱状图">
+            <g v-for="(item,i) in chartBars" :key="i">
+              <rect :x="10" :y="10 + i*16" :width="item.w" height="12" fill="#000" rx="6" />
+              <text :x="item.w + 18" :y="20 + i*16" font-size="12" fill="#1d1d1f">{{ item.label }}</text>
+            </g>
+          </svg>
+          <div class="badge">数据来源：乘联会/懂车帝</div>
+        </div>
+      </section>
+
+      <!-- 新车发布 -->
+      <section class="card" aria-labelledby="launch-title">
+        <div class="pad">
+          <h2 id="launch-title">新车发布（过去 7 天）</h2>
+          <div class="list">
+            <div v-for="(c,idx) in data.launches" :key="idx" class="card" style="border-radius:12px">
+              <div class="pad">
+                <strong>{{ c.model }}</strong>
+                <p>价格：{{ c.price || 'N/A' }}</p>
+                <p>卖点：{{ (c.highlights||[]).slice(0,2).join('、') }}</p>
+                <a :href="c.source" target="_blank" rel="noopener">来源</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIP 声音 -->
+      <section class="card" aria-labelledby="vip-title">
+        <div class="pad">
+          <h2 id="vip-title">VIP 观点（近 7 天）</h2>
+          <div class="list">
+            <div v-for="(v,idx) in data.vip_voices" :key="idx" class="card" style="border-radius:12px">
+              <div class="pad">
+                <strong>{{ v.name }}</strong>
+                <p>{{ v.summary }}</p>
+                <ul>
+                  <li v-for="(q,i) in (v.quotes||[]).slice(0,2)" :key="i">“{{ q }}”</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 智能调光资讯 -->
+      <section class="card" aria-labelledby="dimming-title">
+        <div class="pad">
+          <h2 id="dimming-title">智能调光资讯（Top 10）</h2>
+          <div class="list">
+            <div v-for="(n,idx) in data.dimming_news" :key="idx" class="card" style="border-radius:12px">
+              <div class="pad">
+                <a :href="n.url" target="_blank" rel="noopener"><strong>{{ n.title }}</strong></a>
+                <p>{{ n.summary }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">© 2025 NEV Weekly · 可视化瀑布流页面</footer>
+
+  <script>
+    const { createApp } = Vue;
+    createApp({
+      data(){ return { data: { sales: { over_250k: [], over_350k: [] }, launches: [], vip_voices: [], dimming_news: [] }, chartBars: [] } },
+      async mounted(){
+        try{
+          const r = await fetch('data.json', { cache: 'no-store' });
+          const j = await r.json();
+          this.data = j;
+          const models = (j.sales.over_250k||[]).concat(j.sales.over_350k||[]).slice(0,10);
+          this.chartBars = models.map((m, i) => ({ label: m.model || ('Item '+(i+1)), w: 60 + Math.round(Math.random()*420) }));
+        }catch(e){
+          this.chartBars = Array.from({length:10}).map((_,i)=>({label:'占位 '+(i+1), w: 80 + i*40}));
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
