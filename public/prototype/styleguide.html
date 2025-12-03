@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Styleguide · Prototype</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/device.css">
+</head>
+<body>
+  <div class="frame">
+    <div id="statusbar"></div>
+    <div class="content">
+      <nav class="nav p-3">
+        <div class="flex items-center justify-between">
+          <a href="home.html" class="text-slate-700"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+          <h1 class="text-xl font-semibold text-slate-900">设计规范</h1>
+          <div></div>
+        </div>
+      </nav>
+      <section class="p-3 grid gap-3">
+        <div class="card p-3">
+          <div class="font-medium mb-2">视觉风格</div>
+          <ul class="text-sm text-slate-700 list-disc pl-4">
+            <li>遵循 Apple HIG 与 Material Design</li>
+            <li>色彩：sRGB 色域，浅灰背景与清晰层次</li>
+            <li>字体：San Francisco（iOS）/ Roboto（Android）</li>
+          </ul>
+        </div>
+        <div class="card p-3">
+          <div class="font-medium mb-2">设计令牌（Design Tokens）</div>
+          <pre class="text-xs bg-slate-50 p-3 rounded">{
+  "radius": { "device": 38, "card": 14, "chip": 999 },
+  "statusbar": { "height": 47 },
+  "spacing": [4,8,12,16,24],
+  "colors": { "bg": "#f8fafc", "text": "#0b0f1a", "brand": "#0ea5e9" }
+}</pre>
+        </div>
+        <div class="card p-3">
+          <div class="font-medium mb-2">交互动效参数</div>
+          <ul class="text-sm text-slate-700 list-disc pl-4">
+            <li>按钮按压：duration 200ms, ease</li>
+            <li>卡片阴影过渡：duration 200ms, ease</li>
+            <li>滚动吸附导航：backdrop blur 8px</li>
+            <li>目标性能：移动端 60fps</li>
+          </ul>
+        </div>
+        <div class="card p-3">
+          <div class="font-medium mb-2">组件结构说明</div>
+          <ul class="text-sm text-slate-700 list-disc pl-4">
+            <li>状态栏组件：`components/statusbar.html`，JS 动态时间更新</li>
+            <li>任务卡片：`assets/js/app.js` 渲染，支持完成/删除</li>
+            <li>设备框：`assets/css/device.css`，统一圆角与阴影</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script>
+    fetch('components/statusbar.html').then(r=>r.text()).then(html=>{ document.querySelector('#statusbar').innerHTML = html; });
+  </script>
+</body>
+</html>

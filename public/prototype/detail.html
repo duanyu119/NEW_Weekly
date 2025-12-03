@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Detail · Prototype</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/device.css">
+</head>
+<body>
+  <div class="frame">
+    <div id="statusbar"></div>
+    <div class="content">
+      <nav class="nav p-3">
+        <div class="flex items-center justify-between">
+          <a href="home.html" class="text-slate-700"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+          <h1 class="text-xl font-semibold text-slate-900">任务详情</h1>
+          <div></div>
+        </div>
+      </nav>
+      <section class="p-3">
+        <form id="edit-form" class="card p-3 grid grid-cols-2 gap-2">
+          <input class="col-span-2 border border-slate-200 rounded-md p-2" name="title" placeholder="任务标题" required>
+          <input class="border border-slate-200 rounded-md p-2" name="category" placeholder="分类">
+          <select class="border border-slate-200 rounded-md p-2" name="priority">
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
+          <input class="border border-slate-200 rounded-md p-2" name="reminder" type="datetime-local">
+          <div class="col-span-2 flex gap-2">
+            <button class="btn bg-brand text-white px-4 py-2 touch" type="submit">保存</button>
+            <button id="complete" class="btn bg-emerald-100 text-emerald-700 px-4 py-2 touch" type="button">完成</button>
+            <button id="delete" class="btn bg-rose-100 text-rose-700 px-4 py-2 touch" type="button">删除</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+  <script src="assets/js/app.js"></script>
+  <script>
+    fetch('components/statusbar.html').then(r=>r.text()).then(html=>{ document.querySelector('#statusbar').innerHTML = html; });
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    const form = document.querySelector('#edit-form');
+    const tasks = Store.all();
+    const task = tasks.find(t=>t.id===id);
+    if(task){
+      form.title.value = task.title;
+      form.category.value = task.category||'';
+      form.priority.value = task.priority||'medium';
+      form.reminder.value = task.reminder||'';
+    }
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      Store.update(id, { title: form.title.value.trim(), category: form.category.value.trim(), priority: form.priority.value, reminder: form.reminder.value||null });
+      location.href = 'home.html';
+    });
+    document.querySelector('#complete').addEventListener('click', ()=>{ Store.toggle(id); location.href='home.html'; });
+    document.querySelector('#delete').addEventListener('click', ()=>{ Store.remove(id); location.href='home.html'; });
+  </script>
+</body>
+</html>

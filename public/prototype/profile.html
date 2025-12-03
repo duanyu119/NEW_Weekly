@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Profile · Prototype</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/device.css">
+</head>
+<body>
+  <div class="frame">
+    <div id="statusbar"></div>
+    <div class="content">
+      <nav class="nav p-3">
+        <div class="flex items-center justify-between">
+          <a href="home.html" class="text-slate-700"><i class="fa-solid fa-chevron-left"></i> 返回</a>
+          <h1 class="text-xl font-semibold text-slate-900">个人配置</h1>
+          <div></div>
+        </div>
+      </nav>
+      <section class="p-3">
+        <div class="card p-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-slate-200"></div>
+            <div>
+              <div class="font-medium">DuanLang</div>
+              <div class="text-sm text-slate-600">专业效率型用户</div>
+            </div>
+          </div>
+        </div>
+        <div class="card p-3">
+          <div class="font-medium mb-2">默认分类</div>
+          <div class="flex gap-2 flex-wrap">
+            <span class="chip">Design</span>
+            <span class="chip">Dev</span>
+            <span class="chip">Ops</span>
+            <span class="chip">Personal</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+  <script>
+    fetch('components/statusbar.html').then(r=>r.text()).then(html=>{ document.querySelector('#statusbar').innerHTML = html; });
+  </script>
+</body>
+</html>

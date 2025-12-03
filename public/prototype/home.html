@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Home · Prototype</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/device.css">
+  <script>tailwind.config = { theme: { extend: { colors: { brand: { DEFAULT: '#0ea5e9' } } } } }</script>
+</head>
+<body>
+  <div class="frame">
+    <div id="statusbar"></div>
+    <div class="content">
+      <nav class="nav p-3">
+        <div class="flex items-center justify-between">
+          <h1 class="text-xl font-semibold text-slate-900">任务列表</h1>
+          <div class="flex items-center gap-2">
+            <a class="chip" href="profile.html">个人</a>
+            <a class="chip" href="settings.html">设置</a>
+          </div>
+        </div>
+      </nav>
+
+      <section class="p-3">
+        <div class="hero h-40 rounded-2xl bg-center bg-cover mb-3"></div>
+        <form id="create-form" class="card p-3 mb-3 grid grid-cols-2 gap-2">
+          <input class="col-span-2 border border-slate-200 rounded-md p-2" name="title" placeholder="输入任务标题" required>
+          <input class="border border-slate-200 rounded-md p-2" name="category" placeholder="分类">
+          <select class="border border-slate-200 rounded-md p-2" name="priority">
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
+          <button class="col-span-2 btn bg-brand text-white px-4 py-2 touch" type="submit"><i class="fa-solid fa-plus"></i> 新建</button>
+        </form>
+
+        <div id="task-list"></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/unsplash.js"></script>
+  <script>
+    // load statusbar component
+    fetch('components/statusbar.html').then(r=>r.text()).then(html=>{ document.querySelector('#statusbar').innerHTML = html; });
+    // load hero image
+    loadHero('.hero', 'productivity, minimal, iOS');
+  </script>
+</body>
+</html>
