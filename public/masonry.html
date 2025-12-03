@@ -6,7 +6,6 @@
   <title>NEV Weekly · 瀑布流可视化</title>
   <link rel="stylesheet" href="masonry.css" />
   <link rel="preconnect" href="https://unpkg.com">
-  <script defer src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 </head>
 <body>
   <header class="nav">
@@ -97,21 +96,67 @@
   <footer class="footer">© 2025 NEV Weekly · 可视化瀑布流页面</footer>
 
   <script>
-    const { createApp } = Vue;
-    createApp({
-      data(){ return { data: { sales: { over_250k: [], over_350k: [] }, launches: [], vip_voices: [], dimming_news: [] }, chartBars: [] } },
-      async mounted(){
-        try{
-          const r = await fetch('data.json', { cache: 'no-store' });
-          const j = await r.json();
-          this.data = j;
-          const models = (j.sales.over_250k||[]).concat(j.sales.over_350k||[]).slice(0,10);
-          this.chartBars = models.map((m, i) => ({ label: m.model || ('Item '+(i+1)), w: 60 + Math.round(Math.random()*420) }));
-        }catch(e){
-          this.chartBars = Array.from({length:10}).map((_,i)=>({label:'占位 '+(i+1), w: 80 + i*40}));
-        }
+    async function init(){
+      const app = document.getElementById('app');
+      const state = { data: { sales: { over_250k: [], over_350k: [] }, launches: [], vip_voices: [], dimming_news: [] }, chartBars: [] };
+      try{
+        const r = await fetch('data.json', { cache: 'no-store' });
+        const j = await r.json();
+        state.data = j;
+        const models = (j.sales.over_250k||[]).concat(j.sales.over_350k||[]).slice(0,10);
+        state.chartBars = models.map((m, i) => ({ label: m.model || ('Item '+(i+1)), w: 60 + Math.round(Math.random()*420) }));
+      }catch(e){
+        state.chartBars = Array.from({length:10}).map((_,i)=>({label:'占位 '+(i+1), w: 80 + i*40}));
       }
-    }).mount('#app');
+
+      // Render charts
+      const chart = app.querySelector('#sales-title').closest('.card').querySelector('svg');
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      state.chartBars.forEach((item, i)=>{
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', '10');
+        rect.setAttribute('y', String(10 + i*16));
+        rect.setAttribute('width', String(item.w));
+        rect.setAttribute('height', '12');
+        rect.setAttribute('fill', '#000');
+        rect.setAttribute('rx', '6');
+        g.appendChild(rect);
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', String(item.w + 18));
+        text.setAttribute('y', String(20 + i*16));
+        text.setAttribute('font-size', '12');
+        text.setAttribute('fill', '#1d1d1f');
+        text.textContent = item.label;
+        g.appendChild(text);
+      });
+      chart.appendChild(g);
+
+      // Render launches
+      const launchesWrap = app.querySelector('#launch-title').closest('.card').querySelector('.list');
+      (state.data.launches||[]).forEach((c)=>{
+        const card = document.createElement('div'); card.className='card'; card.style.borderRadius='12px';
+        card.innerHTML = `<div class="pad"><strong>${c.model||''}</strong><p>价格：${c.price||'N/A'}</p><p>卖点：${(c.highlights||[]).slice(0,2).join('、')}</p><a href="${c.source||'#'}" target="_blank" rel="noopener">来源</a></div>`;
+        launchesWrap.appendChild(card);
+      });
+
+      // Render VIP voices
+      const vipWrap = app.querySelector('#vip-title').closest('.card').querySelector('.list');
+      (state.data.vip_voices||[]).forEach((v)=>{
+        const card = document.createElement('div'); card.className='card'; card.style.borderRadius='12px';
+        const quotes = (v.quotes||[]).slice(0,2).map(q=>`<li>“${q}”</li>`).join('');
+        card.innerHTML = `<div class="pad"><strong>${v.name||''}</strong><p>${v.summary||''}</p><ul>${quotes}</ul></div>`;
+        vipWrap.appendChild(card);
+      });
+
+      // Render dimming news
+      const newsWrap = app.querySelector('#dimming-title').closest('.card').querySelector('.list');
+      (state.data.dimming_news||[]).forEach((n)=>{
+        const card = document.createElement('div'); card.className='card'; card.style.borderRadius='12px';
+        card.innerHTML = `<div class="pad"><a href="${n.url||'#'}" target="_blank" rel="noopener"><strong>${n.title||''}</strong></a><p>${n.summary||''}</p></div>`;
+        newsWrap.appendChild(card);
+      });
+    }
+    document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
